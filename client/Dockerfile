@@ -7,7 +7,7 @@ ENV HTTPS_PROXY=""
 
 RUN apt update && apt install -y g++ libssl-dev
 
-COPY aes_utils.h /aes_utils.h
+COPY totp_aes_utils.h /totp_aes_utils.h
 COPY client.cpp /client.cpp
 
 RUN g++ /client.cpp -o /client -lssl -lcrypto
