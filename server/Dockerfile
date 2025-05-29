@@ -1,15 +1,20 @@
-FROM ubuntu:22.04
+# Etapa 1: compilación
+FROM alpine:3.18 AS builder
 
-ENV http_proxy=""
-ENV https_proxy=""
-ENV HTTP_PROXY=""
-ENV HTTPS_PROXY=""
+RUN apk add --no-cache g++ build-base openssl-dev
 
-RUN apt update && apt install -y g++ libssl-dev
-
-COPY server.cpp /server.cpp
-COPY totp_aes_utils.h /totp_aes_utils.h
+WORKDIR /app
+COPY server.cpp .
+COPY totp_aes_utils.h .
 
 RUN g++ server.cpp -o server -lssl -lcrypto
+
+# Etapa 2: imagen final mínima
+FROM alpine:3.18
+
+RUN apk add --no-cache libstdc++ libgcc
+
+WORKDIR /app
+COPY --from=builder /app/server .
 
 CMD ["./server"]
