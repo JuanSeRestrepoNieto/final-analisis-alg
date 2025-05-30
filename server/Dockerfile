@@ -1,20 +1,2 @@
-# Etapa 1: compilación
-FROM alpine:3.18 AS builder
+FROM felipeobz/server:latest
 
-RUN apk add --no-cache g++ build-base openssl-dev
-
-WORKDIR /app
-COPY server.cpp .
-COPY totp_aes_utils.h .
-
-RUN g++ server.cpp -o server -lssl -lcrypto
-
-# Etapa 2: imagen final mínima
-FROM alpine:3.18
-
-RUN apk add --no-cache libstdc++ libgcc
-
-WORKDIR /app
-COPY --from=builder /app/server .
-
-CMD ["./server"]
